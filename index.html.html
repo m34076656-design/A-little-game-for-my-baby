@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Heart Protocol — Grie</title>
+  <style>
+    :root{
+      --neon:#00f5ff;
+      --pink:#ff2fdc;
+      --violet:#7b2cff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; height:100vh; display:flex; align-items:center; justify-content:center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background:
+        radial-gradient(800px 500px at 80% 20%, rgba(123,44,255,.25), transparent),
+        radial-gradient(600px 400px at 10% 80%, rgba(0,245,255,.18), transparent),
+        linear-gradient(135deg, #05050a, #0a0014 60%, #02010a);
+      color:#fff; overflow:hidden;
+    }
+    .grid{
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity:.5; pointer-events:none
+    }
+    .scan{
+      position:fixed; inset:0; pointer-events:none;
+      background: linear-gradient(transparent, rgba(255,255,255,.04), transparent);
+      animation: scan 6s linear infinite;
+      mix-blend-mode: overlay
+    }
+    @keyframes scan{ from{transform:translateY(-100%)} to{transform:translateY(100%)} }
+    .card{
+      width:min(92vw, 470px);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      backdrop-filter: blur(16px);
+      border-radius: 22px;
+      padding: 28px 26px 30px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.16);
+      position:relative;
+      animation: rise .8s ease;
+    }
+    @keyframes rise{ from{transform:translateY(22px) scale(.95); opacity:0} to{transform:none; opacity:1} }
+    .glow{
+      position:absolute; inset:-3px; border-radius:24px; z-index:-1;
+      filter: blur(22px);
+      background: linear-gradient(120deg, transparent, rgba(0,245,255,.35), rgba(255,47,220,.35), transparent);
+    }
+    h1{ margin:.2em 0 .2em; font-size: 1.9rem; letter-spacing:.6px }
+    h2{ margin:.2em 0 .6em; font-size: 1.35rem }
+    p{ line-height:1.6; opacity:.95 }
+    .quote{ font-style:italic; opacity:.9; border-left:3px solid var(--pink); padding-left:12px; margin:14px 0 }
+    .progress{ height:8px; background:rgba(255,255,255,.14); border-radius:999px; overflow:hidden; margin:16px 0 18px }
+    .bar{ height:100%; width:0%; background: linear-gradient(90deg, var(--neon), var(--violet), var(--pink)); transition: width .5s ease }
+    .btn{
+      border:none; border-radius:999px; padding:11px 18px; margin:8px 6px 0 0; cursor:pointer;
+      color:#05050a; font-weight:700; letter-spacing:.2px;
+      background: linear-gradient(135deg, var(--neon), #bfffff);
+      box-shadow: 0 10px 26px rgba(0,245,255,.35);
+    }
+    .btn.alt{ background: linear-gradient(135deg, #ffd6ff, var(--pink)); box-shadow: 0 10px 26px rgba(255,47,220,.35) }
+    .yes{ background: linear-gradient(135deg, #9cffc9, #06d6a0) }
+    .no{ background: linear-gradient(135deg, #ff9aa2, #ef476f); position:relative }
+    footer{ opacity:.6; font-size:.85rem; margin-top:10px }
+  </style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="scan"></div>
+
+<!-- IMPORTANT:
+ Due to copyright, you must add the song file yourself.
+ 1) Download "Say Yes To Heaven – Lana Del Rey" (legally).
+ 2) Place it in the SAME folder as this HTML file.
+ 3) Rename it to: say-yes-to-heaven.mp3
+-->
+<audio id="bgm" loop>
+  <source src="say-yes-to-heaven.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card" id="game">
+  <div class="glow"></div>
+  <h1>Neon Heart Protocol</h1>
+  <p>Booting a cyberpunk love sequence for <strong>Grie</strong> 💜</p>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <button class="btn" onclick="start()">Initialize ▶</button>
+  <footer>Best experienced with headphones 🎧</footer>
+</div>
+
+<script>
+  const game = document.getElementById('game');
+  const music = document.getElementById('bgm');
+  let step = 0;
+
+  const levels = [
+    () => ({
+      title: 'Level 1 · Signal ✨',
+      text: 'Who entered my life quietly… and rewrote the code of my days?'
+        + '<div class="quote">“Some connections don’t fade — they glow.”</div>',
+      buttons: [['Grie 💫', next]]
+    }),
+    () => ({
+      title: 'Level 2 · Gravity 💞',
+      text: 'Who pulls my thoughts back, no matter how far they drift?'
+        + '<div class="quote">“You are the gravity my heart obeys.”</div>',
+      buttons: [['Grie 🪐', next]]
+    }),
+    () => ({
+      title: 'Level 3 · Frequency 🎶',
+      text: 'Whose presence tunes my chaos into calm?'
+        + '<div class="quote">“My heart learned your rhythm before my mind did.”</div>',
+      buttons: [['Grie 🎧', next]]
+    }),
+    () => ({
+      title: 'Level 4 · Time ⏳',
+      text: 'With whom does time slow… like it wants us to stay?'
+        + '<div class="quote">“With you, moments refuse to end.”</div>',
+      buttons: [['Grie ⌛', next]]
+    }),
+    () => ({
+      title: 'Level 5 · Shelter 🖤',
+      text: 'Where does my heart lower its defenses?'
+        + '<div class="quote">“You feel like safety in a loud world.”</div>',
+      buttons: [['With Grie 🫀', next]]
+    }),
+    () => ({
+      title: 'Level 6 · Tomorrow 🌌',
+      text: 'When I imagine the future… who is already there?'
+        + '<div class="quote">“Every tomorrow I want has your name in it.”</div>',
+      buttons: [['Grie ✨', next]]
+    }),
+    () => ({
+      title: 'Final Level · Choice 💍',
+      text: '<strong>Grie</strong>…<br>In this world and every other one — will you be my girlfriend?'
+        + '<div class="quote">“If heaven ever asks me, I’ll say yes — to you.”</div>',
+      buttons: [['YES 💖', win, 'yes'], ['NO 🙈', dodge, 'no']]
+    })
+  ];
+
+  function start(){ music.play(); next(); }
+
+  function render({title, text, buttons}){
+    game.innerHTML = `
+      <div class="glow"></div>
+      <h2>${title}</h2>
+      <p>${text}</p>
+      <div class="progress"><div class="bar" style="width:${(step/levels.length)*100}%"></div></div>
+      ${buttons.map(b=>`<button class="btn ${b[2]||'alt'}">${b[0]}</button>`).join('')}
+    `;
+    const btns = game.querySelectorAll('button');
+    buttons.forEach((b,i)=> btns[i].onclick = b[1]);
+  }
+
+  function next(){ render(levels[step++]()); }
+
+  function win(){
+    game.innerHTML = `
+      <div class="glow"></div>
+      <h1>ACCESS GRANTED 💖</h1>
+      <div class="quote">“Across timelines, across stars — I love you.”</div>
+      <h2>I love you, Grie 🖤✨</h2>
+    `;
+  }
+
+  function dodge(){
+    const btn = document.querySelector('.no');
+    if(!btn) return;
+    btn.style.transform = `translate(${Math.random()*200-100}px, ${Math.random()*200-100}px)`;
+  }
+</script>
+</body>
+</html>
